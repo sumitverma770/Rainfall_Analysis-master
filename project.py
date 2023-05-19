@@ -289,18 +289,17 @@ def eda1():
     return render_template('eda1.html')     
 
 # predict
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', methods=['GET','POST'])
 def predict():
     subdivisions = load_data()['SUBDIVISION'].unique()
-    years = range(1901, 2016)
+    years = list(range(2050, 1990, -1))
+    prediction = None
     if request.method == 'POST':
         year = int(request.form['year'])
         subdivision = request.form['subdivision']
-        model = joblib.load('model.joblib')
-        inputdf = pd.DataFrame([[year, subdivision]], columns=['YEAR', 'SUBDIVISION'])
-        prediction = model.predict(inputdf)
+        prediction = predict_rainfall(year, subdivision)
         return render_template('predict.html', prediction=prediction, year=year, subdivision=subdivision, subdivisions=subdivisions, years=years)
-    return render_template('predict.html', subdivision=subdivision)
+    return render_template('predict.html', subdivisions=subdivisions, years=years)
     
 
 
